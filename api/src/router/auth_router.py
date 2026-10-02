@@ -8,17 +8,6 @@ from service.auth_service import AuthService
 router = APIRouter(prefix="/admin/auth", tags=["Admin Auth Controller"])
 
 
-@router.get("/check-health")
-def check_health(
-    auth_service: Annotated[AuthService, Depends()],
-) -> ApiResponse[dict[str, bool]]:
-    return ApiResponse(
-        success=True,
-        message="Auth service hoạt động",
-        data={"healthy": auth_service is not None},
-    )
-
-
 @router.post("/register-owner")
 async def register_poi_owner(
     body: RegisterPoiOwner,
@@ -26,11 +15,7 @@ async def register_poi_owner(
 ) -> ApiResponse[dict[str, str]]:
 
     result = await auth_service.register_poi_owner(body)
-    return ApiResponse(
-        success=True,
-        message="Đăng ký chủ quán thành công",
-        data=result,
-    )
+    return ApiResponse(success=True, message="Đăng ký chủ quán thành công", data=result)
 
 
 @router.post("/login")
@@ -83,4 +68,3 @@ async def logout():
 @router.post("/change-password")
 async def change_password():
     pass
-

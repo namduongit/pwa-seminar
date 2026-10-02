@@ -17,5 +17,5 @@ class AdminUserRepository:
 
         return AdminUserModel.model_validate(document)
 
-    async def insert(self, document: dict) -> InsertOneResult:
+    async def insert_resource(self, document: dict) -> InsertOneResult:
         return await self.collection.insert_one(document)

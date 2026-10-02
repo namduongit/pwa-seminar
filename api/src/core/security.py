@@ -60,8 +60,25 @@ def generate_refresh_token(id: str) -> str:
     return jwt.encode(payload, setting.JWT_REFRESH, algorithm=setting.JWT_ALGORITHM)
 
 
-def decode_token(token: str, type: TokenType) -> dict:
-    pass
+def decode_token(token: str, token_type: TokenType) -> dict:
+    secret = (
+        setting.JWT_ACCESS if token_type == TokenType.ACCESS else setting.JWT_REFRESH
+    )
+    
+    payload = jwt.decode(
+        token,
+        secret,
+        algorithms=[setting.JWT_ALGORITHM],
+        options={
+            "require": ["sub", "type", "iat", "exp"],
+            "verify_exp": True,
+        },
+    )
+
+    if payload.get("type") != token_type.value:
+        raise jwt.InvalidTokenError("Token không hợp lệ")
+
+    return payload
 
 
 # PII utils

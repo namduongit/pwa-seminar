@@ -49,7 +49,7 @@ class AuthService:
             pii_collected_at=datetime.now(timezone.utc),
         ).to_dump()
 
-        admin_user_inserted = await self.admin_user_repository.insert(
+        admin_user_inserted = await self.admin_user_repository.insert_resource(
             admin_user_document
         )
 
@@ -62,7 +62,7 @@ class AuthService:
         ).to_dump()
 
         poi_owner_registration_inserted = (
-            await self.poi_owner_registration_repository.insert(
+            await self.poi_owner_registration_repository.insert_resource(
                 poi_owner_registration_document
             )
         )
