@@ -32,13 +32,19 @@ def compare_password(password: str, password_hash: str) -> bool:
 
 # JWT utils
 def generate_access_token(
-    id: str, role: str, permissions: list[str], is_poi_owner_verified: bool
+    id: str,
+    role_name: str | None = None,
+    permissions: list[str] | None = None,
+    is_poi_owner_verified: bool = False,
 ) -> str:
+    if permissions is None:
+        permissions = []
+
     now = datetime.now(timezone.utc)
     payload = {
         "sub": id,
         "type": TokenType.ACCESS.value,
-        "role": role,
+        "role_name": role_name,
         "permissions": permissions,
         "is_poi_owner_verified": is_poi_owner_verified,
         "iat": int(now.timestamp()),

@@ -4,7 +4,7 @@ from bson import ObjectId
 from model._base import Base
 
 
-class PoiOwnerRegistrationStatus(Enum):
+class PoiOwnerRegistrationStatus(str, Enum):
     PENDING = "pending"
     APPROVED = "approved"
     REJECTED = "rejected"

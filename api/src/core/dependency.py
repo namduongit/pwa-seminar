@@ -14,7 +14,7 @@ MongoDB = Annotated[AsyncDatabase, Depends(get_mongo)]
 class AccessTokenPayload(BaseModel):
     sub: str
     type: Literal["access"]
-    role: str
+    role_name: str | None
     permissions: list[str]
     is_poi_owner_verified: bool
     iat: int

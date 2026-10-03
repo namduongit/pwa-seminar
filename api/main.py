@@ -1,11 +1,13 @@
 from contextlib import asynccontextmanager
 
+from bson.errors import InvalidId
 from core.api_response import ApiResponse
 from core.provider.mongo import close_mongo, connect_mongo
 from core.provider.redis import close_redis, connect_redis
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from router.admin_router import router as admin_router
 from router.auth_router import router as auth_router
 from router.owner_router import router as owner_router
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -45,7 +47,7 @@ async def http_exception_handler(
         headers=exc.headers,
     )
 
-
+# Validation exception
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(
     request: Request,
@@ -70,7 +72,23 @@ async def validation_exception_handler(
         content=response.model_dump(mode="json"),
     )
 
+# Validation ObjectId exception
+@app.exception_handler(InvalidId)
+async def bson_id_exception_handler(
+    _request: Request,
+    _exc: InvalidId
+) -> JSONResponse:
+    response = ApiResponse[None](
+        success=False,
+        message="Dữ liệu đầu vào không chính xác"
+    )
 
+    return JSONResponse(
+        status_code=400,
+        content=response.model_dump(mode="json")
+    )
+
+# Fallback server exception
 @app.exception_handler(Exception)
 async def unexpected_exception_handler(
     _request: Request,
@@ -87,4 +105,5 @@ async def unexpected_exception_handler(
     )
 
 app.include_router(auth_router)
+app.include_router(admin_router)
 app.include_router(owner_router)

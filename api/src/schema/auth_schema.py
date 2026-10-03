@@ -13,3 +13,8 @@ class RegisterPoiOwner(BaseModel):
 class Login(BaseModel):
     identifier: str
     password: str
+
+
+class ChangePassword(BaseModel):
+    current_password: str
+    new_password: str
