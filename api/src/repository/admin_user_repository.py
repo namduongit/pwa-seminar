@@ -1,5 +1,4 @@
 from bson import ObjectId
-from model.admin_user_model import AdminUserModel
 from pymongo.asynchronous.database import AsyncDatabase
 from pymongo.results import (
     DeleteResult,
@@ -7,6 +6,8 @@ from pymongo.results import (
     InsertOneResult,
     UpdateResult,
 )
+
+from model.admin_user_model import AdminUserModel
 
 
 class AdminUserRepository:
@@ -35,8 +36,10 @@ class AdminUserRepository:
         documents = await cursor.to_list(length=None)
         return [AdminUserModel.model_validate(document) for document in documents]
 
-    async def find_pagination(self, page: int, page_size: int, search: dict):
-        pass
+    async def find_pagination(
+        self, page: int, page_size: int, search: dict, sort_by: str, sort_order: str
+    ):
+        skip = (page - 1) * page_size
 
     # Insert document
     async def insert_item(self, document: dict) -> InsertOneResult:

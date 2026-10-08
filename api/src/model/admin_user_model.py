@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from bson import ObjectId
+
 from model._base import Base
 
 

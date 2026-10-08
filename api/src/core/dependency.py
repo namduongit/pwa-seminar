@@ -1,12 +1,13 @@
 from typing import Annotated, Literal
 
 import jwt
-from core.provider.mongo import get_mongo
-from core.security import TokenType, decode_token
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel
 from pymongo.asynchronous.database import AsyncDatabase
+
+from core.provider.mongo import get_mongo
+from core.security import TokenType, decode_token
 
 MongoDB = Annotated[AsyncDatabase, Depends(get_mongo)]
 
@@ -22,6 +23,35 @@ class AccessTokenPayload(BaseModel):
 
 
 bearer_schema = HTTPBearer(auto_error=False)
+
+
+async def get_current_profile(
+    request: Request,
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_schema)],
+) -> AccessTokenPayload | None:
+
+    token = (
+        credentials.credentials
+        if credentials is not None
+        else request.cookies.get("access_token")
+    )
+
+    if token is None:
+        return None
+
+    try:
+        payload = decode_token(token, TokenType.ACCESS)
+        return AccessTokenPayload.model_validate(payload)
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Phiên đăng nhập đã hết hạn",
+        )
+    except jwt.InvalidTokenError, ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Phiên đăng nhập không chính xác",
+        )
 
 
 async def get_current_access_token(
@@ -48,7 +78,7 @@ async def get_current_access_token(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Phiên đăng nhập đã hết hạn",
         )
-    except (jwt.InvalidTokenError, ValueError):
+    except jwt.InvalidTokenError, ValueError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Phiên đăng nhập không chính xác",

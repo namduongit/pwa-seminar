@@ -13,9 +13,9 @@ async def init_collection():
 
     # Create collection
     db = client.get_mongo()
-    # await db.create_collection("role")
-    # await db.create_collection("admin_user")
-    # await db.create_collection("poi_owner_registration")
+    await db.create_collection("role")
+    await db.create_collection("admin_user")
+    await db.create_collection("poi_owner_registration")
 
     print("Init collection successfully")
 

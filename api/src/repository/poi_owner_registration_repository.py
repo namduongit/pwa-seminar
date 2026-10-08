@@ -1,5 +1,4 @@
 from bson import ObjectId
-from model.poi_owner_registration_model import PoiOwnerRegistrationModel
 from pymongo.asynchronous.database import AsyncDatabase
 from pymongo.results import (
     DeleteResult,
@@ -7,6 +6,8 @@ from pymongo.results import (
     InsertOneResult,
     UpdateResult,
 )
+
+from model.poi_owner_registration_model import PoiOwnerRegistrationModel
 
 
 class PoiOwnerRegistrationReposioty:
@@ -36,7 +37,9 @@ class PoiOwnerRegistrationReposioty:
             PoiOwnerRegistrationModel.model_validate(document) for document in documents
         ]
 
-    async def find_pagination(self, page: int, page_size: int, search: dict):
+    async def find_pagination(
+        self, page: int, page_size: int, search: dict, sort_by: str, sort_order: str
+    ):
         pass
 
     # Insert document
